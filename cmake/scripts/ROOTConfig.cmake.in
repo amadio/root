@@ -66,6 +66,10 @@ get_filename_component(_thisdir "${CMAKE_CURRENT_LIST_FILE}" PATH)
 # Include RootMacros.cmake to get ROOT's CMake macros
 include("${_thisdir}/RootMacros.cmake")
 
+include(CMakeFindDependencyMacro)
+
+find_dependency(Threads REQUIRED)
+
 #----------------------------------------------------------------------------
 # Include the file listing all the imported targets and options
 if(NOT CMAKE_PROJECT_NAME STREQUAL ROOT)
