@@ -8,15 +8,23 @@
 # CMakeLists.txt file for building ROOT core/winnt package
 ############################################################################
 
-set(Winnt_dict_headers
-  TWinNTSystem.h
-  PARENT_SCOPE
-)
+if(NOT WIN32)
+  return()
+endif()
 
-ROOT_OBJECT_LIBRARY(Winnt
+set(Winnt_dict_headers TWinNTSystem.h PARENT_SCOPE)
+
+target_sources(Core PRIVATE
   src/TWin32SplashThread.cxx
   src/TWinNTSystem.cxx
   src/Win32Splash.cxx
+)
+
+target_link_libraries(Core PRIVATE
+  shell32.lib
+  WSock32.lib
+  Oleaut32.lib
+  Iphlpapi.lib
 )
 
 ROOT_INSTALL_HEADERS()

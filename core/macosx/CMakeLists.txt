@@ -8,16 +8,27 @@
 # CMakeLists.txt file for building ROOT core/macosx package
 ############################################################################
 
-set(Macosx_dict_headers
-  TMacOSXSystem.h
-  PARENT_SCOPE
+if(NOT APPLE)
+  return()
+endif()
+
+target_link_libraries(Core PRIVATE
+  -F/System/Library/PrivateFrameworks -framework CoreSymbolication
 )
 
-ROOT_OBJECT_LIBRARY(Macosx
-  src/CocoaUtils.mm
-  src/TMacOSXSystem.mm
-)
+if(cocoa)
+  set_property(TARGET Core APPEND PROPERTY DICT_HEADERS TMacOSXSystem.h)
 
-target_compile_options(Macosx PRIVATE -ObjC++)
+  target_link_libraries(Core PRIVATE -framework Cocoa)
 
-ROOT_INSTALL_HEADERS()
+  ROOT_OBJECT_LIBRARY(Macosx
+    src/CocoaUtils.mm
+    src/TMacOSXSystem.mm
+  )
+
+  target_compile_options(Macosx PRIVATE -ObjC++)
+
+  target_sources(Core PRIVATE $<TARGET_OBJECTS:Macosx>)
+
+  ROOT_INSTALL_HEADERS()
+endif()

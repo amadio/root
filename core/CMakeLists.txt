@@ -38,16 +38,6 @@ set_source_files_properties(${CMAKE_BINARY_DIR}/include/RGitCommit.h
 install(FILES ${CMAKE_BINARY_DIR}/include/RGitCommit.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-if(WIN32)
-  set(corelinklibs shell32.lib WSock32.lib Oleaut32.lib Iphlpapi.lib)
-elseif(APPLE)
-  if(cocoa)
-     set(corelinklibs "-framework Cocoa -F/System/Library/PrivateFrameworks -framework CoreSymbolication")
-  else()
-     set(corelinklibs "-F/System/Library/PrivateFrameworks -framework CoreSymbolication")
-  endif()
-endif()
-
 ROOT_LINKER_LIBRARY(Core
   base/src/TROOT.cxx
   ${CMAKE_BINARY_DIR}/include/RGitCommit.h
@@ -66,36 +56,33 @@ target_link_libraries(Core
     ${LIBLZMA_LIBRARIES}
     ${CMAKE_DL_LIBS}
     ${CMAKE_THREAD_LIBS_INIT}
-    ${corelinklibs}
 )
 
 # This is needed because LinkDef.h includes other LinkDefs
 # with paths starting from ${CMAKE_SOURCE_DIR}
 target_include_directories(Core PRIVATE ${CMAKE_SOURCE_DIR})
 
+add_subdirectory(base)
 add_subdirectory(clib)
 add_subdirectory(clingutils)
 add_subdirectory(cont)
 add_subdirectory(dictgen)
 add_subdirectory(foundation)
+add_subdirectory(imt)
+add_subdirectory(lz4)
+add_subdirectory(lzma)
 add_subdirectory(meta)
 add_subdirectory(metacling)
-if(NOT WIN32)
 add_subdirectory(multiproc)
-endif()
+add_subdirectory(newdelete)
 add_subdirectory(rint)
 add_subdirectory(textinput)
 add_subdirectory(thread)
-add_subdirectory(imt)
 add_subdirectory(zip)
-add_subdirectory(lzma)
-add_subdirectory(lz4)
 
-if(NOT WIN32)
-  add_subdirectory(newdelete)
-endif()
-
-add_subdirectory(base)
+add_subdirectory(macosx)
+add_subdirectory(unix)
+add_subdirectory(winnt)
 
 target_sources(Core PRIVATE
   $<TARGET_OBJECTS:Base>
@@ -108,19 +95,6 @@ target_sources(Core PRIVATE
   $<TARGET_OBJECTS:Meta>
   $<TARGET_OBJECTS:TextInput>
 )
-
-if(UNIX)
-  add_subdirectory(unix)
-  target_sources(Core PRIVATE $<TARGET_OBJECTS:Unix>)
-endif()
-if(WIN32)
-  add_subdirectory(winnt)
-  target_sources(Core PRIVATE $<TARGET_OBJECTS:Winnt>)
-endif()
-if(cocoa)
-  add_subdirectory(macosx)
-  target_sources(Core PRIVATE $<TARGET_OBJECTS:Macosx>)
-endif()
 
 if(CMAKE_CXX_STANDARD GREATER 11)
   set(dict_v7dirs base/v7/inc)
@@ -146,9 +120,6 @@ include_directories(
   clib/inc
   cont/inc
   foundation/inc
-  macosx/inc
-  unix/inc
-  winnt/inc
   clingutils/inc
   meta/inc
   textinput/inc
