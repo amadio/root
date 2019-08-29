@@ -232,9 +232,7 @@ if(root7)
   )
 endif()
 
-
-# only here complete list of headers can be propogated to parent cmake file
-set(Core_dict_headers ${BASE_HEADERS} PARENT_SCOPE)
+set_property(TARGET Core APPEND PROPERTY DICT_HEADERS ${BASE_HEADERS})
 
 ROOT_OBJECT_LIBRARY(Base ${BASE_SOURCES})
 target_include_directories(Base PRIVATE ${PCRE_INCLUDE_DIR})

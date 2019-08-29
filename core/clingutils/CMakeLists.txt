@@ -11,10 +11,9 @@
 # These files depend on cling/clang/llvm; they need to be linked into libCling.
 # They are used by rootcling_stage1, rootcling and libCling.
 
-set(ClingUtils_dict_headers
+set_property(TARGET Core APPEND PROPERTY DICT_HEADERS
   root_std_complex.h
   TClingRuntime.h
-  PARENT_SCOPE
 )
 
 target_include_directories(Core PUBLIC

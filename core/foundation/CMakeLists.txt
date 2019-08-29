@@ -8,7 +8,7 @@
 # CMakeLists.txt file for building ROOT core/foundation package
 ############################################################################
 
-set(Foundation_dict_headers
+set_property(TARGET Core APPEND PROPERTY DICT_HEADERS
   ESTLType.h
   RStringView.h
   TClassEdit.h
@@ -19,7 +19,6 @@ set(Foundation_dict_headers
   ROOT/RStringView.hxx
   ROOT/span.hxx
   ROOT/TypeTraits.hxx
-  PARENT_SCOPE
 )
 
 set(sources
