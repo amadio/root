@@ -38,6 +38,41 @@ set_source_files_properties(${CMAKE_BINARY_DIR}/include/RGitCommit.h
 install(FILES ${CMAKE_BINARY_DIR}/include/RGitCommit.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
+if(WIN32)
+  set(corelinklibs shell32.lib WSock32.lib Oleaut32.lib Iphlpapi.lib)
+elseif(APPLE)
+  if(cocoa)
+     set(corelinklibs "-framework Cocoa -F/System/Library/PrivateFrameworks -framework CoreSymbolication")
+  else()
+     set(corelinklibs "-F/System/Library/PrivateFrameworks -framework CoreSymbolication")
+  endif()
+endif()
+
+ROOT_LINKER_LIBRARY(Core
+  base/src/TROOT.cxx
+  ${CMAKE_BINARY_DIR}/include/RGitCommit.h
+  BUILTINS
+    LZMA
+)
+
+add_dependencies(Core CLING gitcommit)
+
+target_link_libraries(Core
+  PRIVATE
+    PCRE::PCRE
+    xxHash::xxHash
+    LZ4::LZ4
+    ZLIB::ZLIB
+    ${LIBLZMA_LIBRARIES}
+    ${CMAKE_DL_LIBS}
+    ${CMAKE_THREAD_LIBS_INIT}
+    ${corelinklibs}
+)
+
+# This is needed because LinkDef.h includes other LinkDefs
+# with paths starting from ${CMAKE_SOURCE_DIR}
+target_include_directories(Core PRIVATE ${CMAKE_SOURCE_DIR})
+
 add_subdirectory(clib)
 add_subdirectory(clingutils)
 add_subdirectory(cont)
@@ -62,17 +97,29 @@ endif()
 
 add_subdirectory(base)
 
+target_sources(Core PRIVATE
+  $<TARGET_OBJECTS:Base>
+  $<TARGET_OBJECTS:Clib>
+  $<TARGET_OBJECTS:Cont>
+  $<TARGET_OBJECTS:Foundation>
+  $<TARGET_OBJECTS:Lzma>
+  $<TARGET_OBJECTS:Lz4>
+  $<TARGET_OBJECTS:Zip>
+  $<TARGET_OBJECTS:Meta>
+  $<TARGET_OBJECTS:TextInput>
+)
+
 if(UNIX)
   add_subdirectory(unix)
-  set(unix_objects $<TARGET_OBJECTS:Unix>)
+  target_sources(Core PRIVATE $<TARGET_OBJECTS:Unix>)
 endif()
 if(WIN32)
   add_subdirectory(winnt)
-  set(winnt_objects $<TARGET_OBJECTS:Winnt>)
+  target_sources(Core PRIVATE $<TARGET_OBJECTS:Winnt>)
 endif()
 if(cocoa)
   add_subdirectory(macosx)
-  set(macosx_objects $<TARGET_OBJECTS:Macosx>)
+  target_sources(Core PRIVATE $<TARGET_OBJECTS:Macosx>)
 endif()
 
 if(CMAKE_CXX_STANDARD GREATER 11)
@@ -107,37 +154,7 @@ include_directories(
   textinput/inc
 )
 
-set(objectlibs $<TARGET_OBJECTS:Base>
-               $<TARGET_OBJECTS:Clib>
-               $<TARGET_OBJECTS:Cont>
-               $<TARGET_OBJECTS:Foundation>
-               $<TARGET_OBJECTS:Lzma>
-               $<TARGET_OBJECTS:Lz4>
-               $<TARGET_OBJECTS:Zip>
-               $<TARGET_OBJECTS:Meta>
-               $<TARGET_OBJECTS:TextInput>
-               ${macosx_objects}
-               ${unix_objects}
-               ${winnt_objects})
-
-ROOT_OBJECT_LIBRARY(BaseTROOT ${CMAKE_SOURCE_DIR}/core/base/src/TROOT.cxx ${CMAKE_BINARY_DIR}/include/RGitCommit.h)
-add_dependencies(BaseTROOT gitcommit)
-#----------------------------------------------------------------------------------------
-
-if(WIN32)
-  set(corelinklibs shell32.lib WSock32.lib Oleaut32.lib Iphlpapi.lib)
-elseif(APPLE)
-  if(cocoa)
-     set(corelinklibs "-framework Cocoa -F/System/Library/PrivateFrameworks -framework CoreSymbolication")
-  else()
-     set(corelinklibs "-F/System/Library/PrivateFrameworks -framework CoreSymbolication")
-  endif()
-endif()
-
 add_subdirectory(rootcling_stage1)
-
-#-------------------------------------------------------------------------------
-ROOT_LINKER_LIBRARY(Core $<TARGET_OBJECTS:BaseTROOT> ${objectlibs} BUILTINS LZMA)
 
 ROOT_GENERATE_DICTIONARY(G__Core
   ${Core_dict_headers}
@@ -158,20 +175,3 @@ ROOT_GENERATE_DICTIONARY(G__Core
   LINKDEF
     base/inc/LinkDef.h
 )
-
-# This is needed because LinkDef.h includes other LinkDef starting from ${CMAKE_SOURCE_DIR}
-target_include_directories(Core PRIVATE ${CMAKE_SOURCE_DIR})
-
-target_link_libraries(Core
-  PRIVATE
-    PCRE::PCRE
-    ${LIBLZMA_LIBRARIES}
-    xxHash::xxHash
-    LZ4::LZ4
-    ZLIB::ZLIB
-    ${CMAKE_DL_LIBS}
-    ${CMAKE_THREAD_LIBS_INIT}
-    ${corelinklibs}
-)
-
-add_dependencies(Core CLING)
