@@ -62,6 +62,8 @@ target_link_libraries(Core
 # with paths starting from ${CMAKE_SOURCE_DIR}
 target_include_directories(Core PRIVATE ${CMAKE_SOURCE_DIR})
 
+add_subdirectory(rootcling_stage1)
+
 add_subdirectory(base)
 add_subdirectory(clib)
 add_subdirectory(clingutils)
@@ -124,8 +126,6 @@ include_directories(
   meta/inc
   textinput/inc
 )
-
-add_subdirectory(rootcling_stage1)
 
 ROOT_GENERATE_DICTIONARY(G__Core
   ${Core_dict_headers}
