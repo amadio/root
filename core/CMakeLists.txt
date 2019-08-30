@@ -81,10 +81,6 @@ add_subdirectory(macosx)
 add_subdirectory(unix)
 add_subdirectory(winnt)
 
-target_sources(Core PRIVATE
-  $<TARGET_OBJECTS:TextInput>
-)
-
 #---G__Core--------------------------------------------------------------------
 
 # libCore is linked against zlib (based on the location returned by find_package or builtin_zlib). The dictionary of
@@ -101,7 +97,6 @@ target_sources(Core PRIVATE
 include_directories(
   ${ZLIB_INCLUDE_DIR}
   clingutils/inc
-  textinput/inc
 )
 
 get_target_property(CORE_DICT_HEADERS Core DICT_HEADERS)

@@ -10,7 +10,7 @@
 
 set_property(TARGET Core APPEND PROPERTY DICT_HEADERS Getline.h)
 
-ROOT_OBJECT_LIBRARY(TextInput
+target_sources(Core PRIVATE
   src/Getline_color.cxx
   src/Getline.cxx
   src/textinput/Editor.cpp
@@ -29,7 +29,9 @@ ROOT_OBJECT_LIBRARY(TextInput
   src/textinput/TextInput.cpp
 )
 
-target_include_directories(TextInput PRIVATE src)
+target_include_directories(Core PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+)
 
 ROOT_INSTALL_HEADERS()
-set_property(GLOBAL APPEND PROPERTY ROOT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src)
