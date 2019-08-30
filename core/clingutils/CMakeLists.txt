@@ -17,6 +17,11 @@ set(ClingUtils_dict_headers
   PARENT_SCOPE
 )
 
+target_include_directories(Core PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/res>
+)
+
 ROOT_OBJECT_LIBRARY(ClingUtils
   src/RStl.cxx
   src/TClingUtils.cxx
