@@ -82,7 +82,6 @@ add_subdirectory(unix)
 add_subdirectory(winnt)
 
 target_sources(Core PRIVATE
-  $<TARGET_OBJECTS:Meta>
   $<TARGET_OBJECTS:TextInput>
 )
 
@@ -102,7 +101,6 @@ target_sources(Core PRIVATE
 include_directories(
   ${ZLIB_INCLUDE_DIR}
   clingutils/inc
-  meta/inc
   textinput/inc
 )
 
