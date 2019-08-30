@@ -40,7 +40,7 @@ set_property(TARGET Core APPEND PROPERTY DICT_HEADERS
   TVirtualCollectionProxy.h
 )
 
-ROOT_OBJECT_LIBRARY(Cont
+target_sources(Core PRIVATE
   src/TArrayC.cxx
   src/TArray.cxx
   src/TArrayD.cxx
@@ -69,7 +69,10 @@ ROOT_OBJECT_LIBRARY(Cont
   src/TSortedList.cxx
 )
 
-target_include_directories(Cont PRIVATE res ../foundation/res)
+target_include_directories(Core PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/res>
+)
 
 ROOT_INSTALL_HEADERS()
 
