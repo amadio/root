@@ -52,7 +52,6 @@ target_link_libraries(Core
     xxHash::xxHash
     LZ4::LZ4
     ZLIB::ZLIB
-    ${LIBLZMA_LIBRARIES}
     ${CMAKE_DL_LIBS}
     ${CMAKE_THREAD_LIBS_INIT}
 )
@@ -86,7 +85,6 @@ add_subdirectory(unix)
 add_subdirectory(winnt)
 
 target_sources(Core PRIVATE
-  $<TARGET_OBJECTS:Lzma>
   $<TARGET_OBJECTS:Lz4>
   $<TARGET_OBJECTS:Zip>
   $<TARGET_OBJECTS:Meta>
