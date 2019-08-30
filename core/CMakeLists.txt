@@ -49,7 +49,6 @@ add_dependencies(Core CLING gitcommit)
 
 target_link_libraries(Core
   PRIVATE
-    PCRE::PCRE
     xxHash::xxHash
     LZ4::LZ4
     ZLIB::ZLIB
@@ -87,7 +86,6 @@ add_subdirectory(unix)
 add_subdirectory(winnt)
 
 target_sources(Core PRIVATE
-  $<TARGET_OBJECTS:Base>
   $<TARGET_OBJECTS:Clib>
   $<TARGET_OBJECTS:Cont>
   $<TARGET_OBJECTS:Foundation>
@@ -97,10 +95,6 @@ target_sources(Core PRIVATE
   $<TARGET_OBJECTS:Meta>
   $<TARGET_OBJECTS:TextInput>
 )
-
-if(CMAKE_CXX_STANDARD GREATER 11)
-  set(dict_v7dirs base/v7/inc)
-endif()
 
 #---G__Core--------------------------------------------------------------------
 
@@ -117,8 +111,6 @@ endif()
 # NOTE: We cannot use set_property(TARGET G__Core ...) becase this has to happen before registering the target.
 include_directories(
   ${ZLIB_INCLUDE_DIR}
-  base/inc
-  ${dict_v7dirs}
   clib/inc
   cont/inc
   foundation/inc

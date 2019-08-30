@@ -8,7 +8,7 @@
 # CMakeLists.txt file for building ROOT core/base package
 ############################################################################
 
-include_directories(res ../foundation/res)
+target_include_directories(Core PRIVATE ../foundation/res)
 
 set(BASE_HEADERS
   ROOT/StringConv.hxx
@@ -234,11 +234,18 @@ endif()
 
 set_property(TARGET Core APPEND PROPERTY DICT_HEADERS ${BASE_HEADERS})
 
-ROOT_OBJECT_LIBRARY(Base ${BASE_SOURCES})
-target_include_directories(Base PRIVATE ${PCRE_INCLUDE_DIR})
+target_sources(Core PRIVATE ${BASE_SOURCES})
+
+target_include_directories(Core PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/v7/inc>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/res>
+)
+
+target_link_libraries(Core PRIVATE PCRE::PCRE)
 
 #---CreateTApplicationCommandLineOptions------------------------------------------------------------------
-generateHeader(Base
+generateHeader(Core
   ${CMAKE_CURRENT_SOURCE_DIR}/src/root-argparse.py
   ${CMAKE_BINARY_DIR}/include/TApplicationCommandLineOptionsHelp.h
 )
