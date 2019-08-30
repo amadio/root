@@ -37,4 +37,11 @@ ROOT_OBJECT_LIBRARY(Clib
 
 target_include_directories(Clib PRIVATE res)
 
+target_sources(Core PRIVATE $<TARGET_OBJECTS:Clib>)
+
+target_include_directories(Core PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/res>
+)
+
 ROOT_INSTALL_HEADERS()
