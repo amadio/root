@@ -49,7 +49,6 @@ add_dependencies(Core CLING gitcommit)
 
 target_link_libraries(Core
   PRIVATE
-    ZLIB::ZLIB
     ${CMAKE_DL_LIBS}
     ${CMAKE_THREAD_LIBS_INIT}
 )
@@ -83,7 +82,6 @@ add_subdirectory(unix)
 add_subdirectory(winnt)
 
 target_sources(Core PRIVATE
-  $<TARGET_OBJECTS:Zip>
   $<TARGET_OBJECTS:Meta>
   $<TARGET_OBJECTS:TextInput>
 )
