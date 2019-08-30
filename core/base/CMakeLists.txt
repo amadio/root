@@ -8,8 +8,6 @@
 # CMakeLists.txt file for building ROOT core/base package
 ############################################################################
 
-target_include_directories(Core PRIVATE ../foundation/res)
-
 set(BASE_HEADERS
   ROOT/StringConv.hxx
   ROOT/TExecutor.hxx

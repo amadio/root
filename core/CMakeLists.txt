@@ -86,7 +86,6 @@ add_subdirectory(unix)
 add_subdirectory(winnt)
 
 target_sources(Core PRIVATE
-  $<TARGET_OBJECTS:Foundation>
   $<TARGET_OBJECTS:Lzma>
   $<TARGET_OBJECTS:Lz4>
   $<TARGET_OBJECTS:Zip>
@@ -109,7 +108,6 @@ target_sources(Core PRIVATE
 # NOTE: We cannot use set_property(TARGET G__Core ...) becase this has to happen before registering the target.
 include_directories(
   ${ZLIB_INCLUDE_DIR}
-  foundation/inc
   clingutils/inc
   meta/inc
   textinput/inc

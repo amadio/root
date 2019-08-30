@@ -21,17 +21,21 @@ set_property(TARGET Core APPEND PROPERTY DICT_HEADERS
   ROOT/TypeTraits.hxx
 )
 
-set(sources
+set(FOUNDATION_SOURCES
   src/FoundationUtils.cxx
   src/RConversionRuleParser.cxx
   src/TClassEdit.cxx
 )
 
-ROOT_OBJECT_LIBRARY(Foundation ${sources})
-target_include_directories(Foundation PRIVATE res)
+target_sources(Core PRIVATE ${FOUNDATION_SOURCES})
 
-ROOT_OBJECT_LIBRARY(Foundation_Stage1 ${sources}) # used by rootcling_stage1
-target_include_directories(Foundation_Stage1 PRIVATE res)
+target_include_directories(Core PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/res>
+)
+
+ROOT_OBJECT_LIBRARY(Foundation_Stage1 ${FOUNDATION_SOURCES}) # used by rootcling_stage1
+target_include_directories(Foundation_Stage1 PRIVATE ../base/inc res)
 set_target_properties(Foundation_Stage1 PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} ${CLING_CXXFLAGS}")
 
 ROOT_INSTALL_HEADERS()
