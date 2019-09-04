@@ -49,54 +49,6 @@ if (CMAKE_SYSTEM_NAME MATCHES Darwin)
     set(MACOSX_GLU_DEPRECATED ON)
   endif()
 
-  if (CMAKE_COMPILER_IS_GNUCXX)
-     message(STATUS "Found GNU compiler collection")
-
-     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wshadow -Wall -Woverloaded-virtual -fsigned-char -fno-common")
-     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pipe -W -Wall -fsigned-char -fno-common")
-     SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=legacy")
-
-     SET(CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS} -single_module -Wl,-dead_strip_dylibs")
-     SET(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -single_module -Wl,-dead_strip_dylibs")
-
-     set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -bind_at_load -m64")
-     set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -bind_at_load -m64")
-
-     # Select flags.
-     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG")
-     set(CMAKE_CXX_FLAGS_RELEASE        "-O2 -DNDEBUG")
-     set(CMAKE_CXX_FLAGS_DEBUG          "-g")
-     set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O2 -g -DNDEBUG")
-     set(CMAKE_C_FLAGS_RELEASE          "-O2 -DNDEBUG")
-     set(CMAKE_C_FLAGS_DEBUG            "-g")
-  elseif(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
-     message(STATUS "Found LLVM compiler collection")
-
-     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wall -Woverloaded-virtual -fsigned-char -fno-common -Qunused-arguments")
-     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pipe -W -Wall -fsigned-char -fno-common -Qunused-arguments")
-     if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8)
-       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow")
-     endif()
-
-     SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=legacy")
-
-     SET(CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS} -single_module -Wl,-dead_strip_dylibs")
-     SET(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -single_module -Wl,-dead_strip_dylibs")
-
-     set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -bind_at_load -m64")
-     set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -bind_at_load -m64")
-
-     # Select flags.
-     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG")
-     set(CMAKE_CXX_FLAGS_RELEASE        "-O2 -DNDEBUG")
-     set(CMAKE_CXX_FLAGS_DEBUG          "-g")
-     set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O2 -g -DNDEBUG")
-     set(CMAKE_C_FLAGS_RELEASE          "-O2 -DNDEBUG")
-     set(CMAKE_C_FLAGS_DEBUG            "-g")
-  else()
-    MESSAGE(FATAL_ERROR "There is no setup for this compiler with ID=${CMAKE_CXX_COMPILER_ID} up to now. Don't know what to do. Stop cmake at this point.")
-  endif()
-
   #---Set Linker flags----------------------------------------------------------------------
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mmacosx-version-min=${MACOSX_VERSION}")
 else (CMAKE_SYSTEM_NAME MATCHES Darwin)

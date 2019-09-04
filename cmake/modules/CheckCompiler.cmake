@@ -44,54 +44,6 @@ else()
   set(CMAKE_Fortran_COMPILER CMAKE_Fortran_COMPILER-NOTFOUND)
 endif()
 
-#----Test if clang setup works----------------------------------------------------------------------
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  exec_program(${CMAKE_CXX_COMPILER} ARGS "--version 2>&1 | grep version" OUTPUT_VARIABLE _clang_version_info)
-  string(REGEX REPLACE "^.*[ ]version[ ]([0-9]+)\\.[0-9]+.*" "\\1" CLANG_MAJOR "${_clang_version_info}")
-  string(REGEX REPLACE "^.*[ ]version[ ][0-9]+\\.([0-9]+).*" "\\1" CLANG_MINOR "${_clang_version_info}")
-  message(STATUS "Found Clang. Major version ${CLANG_MAJOR}, minor version ${CLANG_MINOR}")
-
-  if(CMAKE_GENERATOR STREQUAL "Ninja")
-    # LLVM/Clang are automatically checking if we are in interactive terminal mode.
-    # We use color output only for Ninja, because Ninja by default is buffering the output,
-    # so Clang disables colors as it is sure whether the output goes to a file or to a terminal.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcolor-diagnostics")
-  endif()
-  if(ccache AND CCACHE_VERSION VERSION_LESS "3.2.0")
-    # https://bugzilla.samba.org/show_bug.cgi?id=8118
-    # Call to 'ccache clang' is triggering next warning (valid for ccache 3.1.x, fixed in 3.2):
-    # "clang: warning: argument unused during compilation: '-c"
-    # Adding -Qunused-arguments provides a workaround for the bug.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")
-  endif()
-else()
-  set(CLANG_MAJOR 0)
-  set(CLANG_MINOR 0)
-endif()
-
-#---Obtain the major and minor version of the GNU compiler-------------------------------------------
-if (CMAKE_COMPILER_IS_GNUCXX)
-  string(REGEX REPLACE "^([0-9]+).*$"                   "\\1" GCC_MAJOR ${CMAKE_CXX_COMPILER_VERSION})
-  string(REGEX REPLACE "^[0-9]+\\.([0-9]+).*$"          "\\1" GCC_MINOR ${CMAKE_CXX_COMPILER_VERSION})
-  string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*$" "\\1" GCC_PATCH ${CMAKE_CXX_COMPILER_VERSION})
-
-  if(GCC_PATCH MATCHES "\\.+")
-    set(GCC_PATCH "")
-  endif()
-  if(GCC_MINOR MATCHES "\\.+")
-    set(GCC_MINOR "")
-  endif()
-  if(GCC_MAJOR MATCHES "\\.+")
-    set(GCC_MAJOR "")
-  endif()
-  message(STATUS "Found GCC. Major version ${GCC_MAJOR}, minor version ${GCC_MINOR}")
-else()
-  set(GCC_MAJOR 0)
-  set(GCC_MINOR 0)
-endif()
-
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
 
@@ -143,18 +95,6 @@ if(CMAKE_USE_PTHREADS_INIT)
   set(CMAKE_THREAD_FLAG ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
-#---Setup compiler-specific flags (warning etc)----------------------------------------------
-if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
-  # AppleClang and Clang proper.
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wc++11-narrowing -Wsign-compare -Wsometimes-uninitialized -Wconditional-uninitialized -Wheader-guard -Warray-bounds -Wcomment -Wtautological-compare -Wstrncat-size -Wloop-analysis -Wbool-conversion")
-elseif(CMAKE_COMPILER_IS_GNUCXX)
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-implicit-fallthrough -Wno-noexcept-type")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-implicit-fallthrough")
-  endif()
-endif()
-
-
 #---Setup details depending on the major platform type----------------------------------------------
 if(CMAKE_SYSTEM_NAME MATCHES Linux)
   include(SetUpLinux)
@@ -193,6 +133,13 @@ check_cxx_source_compiles(
 #endif
 int main() {}
 " GLIBCXX_USE_CXX11_ABI)
+
+foreach(LANG C CXX Fortran)
+  foreach(BUILD_TYPE DEBUG RELEASE RELWITHDEBINFO)
+    set(CMAKE_${LANG}_FLAGS_${BUILD_TYPE} ${ROOT_FLAGS_${BUILD_TYPE}}
+      CACHE STRING "Default ${LANG} flags for ${BUILD_TYPE} build")
+  endforeach()
+endforeach()
 
 #---Print the final compiler flags--------------------------------------------------------------------
 string(TOUPPER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
